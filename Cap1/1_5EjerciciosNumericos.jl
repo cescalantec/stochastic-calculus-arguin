@@ -1,4 +1,4 @@
-# Libro: A First Course in Stocastic Calculus - Louis-Pierre Arguin
+# Libro: A First Course in Stochastic Calculus - Louis-Pierre Arguin
 
 # Propuesta de solución de algunos de los Ejercicios de proyectos numéricos, sección 1.5
 
@@ -130,7 +130,7 @@ x_aleat = rand(X, N)
 
 # Vector de medias de tamaño creciente desde 1 hasta N
 
-medias = [mean(x_aleat[1:j]) for j in 1:N]
+medias = cumsum(x_aleat) ./ (1:N)
 
 plot(1:N, medias,
     legend=false,
