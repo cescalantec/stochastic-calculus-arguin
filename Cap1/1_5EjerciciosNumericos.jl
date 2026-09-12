@@ -1,3 +1,5 @@
+# Libro: A First Course in Stocastic Calculus - Louis-Pierre Arguin
+
 # Propuesta de solución de algunos de los Ejercicios de proyectos numéricos, sección 1.5
 
 #=
@@ -48,10 +50,58 @@ bar(marca_clase_j, a,
 using StatsPlots
 
 histogram(x, 
-          bins = m, 
+          bins = m,
+          normalize = :probability,
           title = "Con histogram de StatsPlots", 
           xlabel = "x", 
           ylabel = "Frecuencia relativa", 
           legend = false,
           color = :lightgray)
+
+#=
+1.1(c) Graficar la función de distribución (fd)
+=#
+# Forma 1. Con Plots. Usamos los resultados que nos sirvan
+a_acumulado = cumsum(a)
+
+plot(marca_clase_j, a_acumulado,
+    title = "Función de distribución manual de la muestra aleatoria",
+    xlabel = "x",
+    ylabel = "Frec. relativa acum.",
+    legend = false)
+
+# Forma 2. Con StatsPlos. Histograma.
+
+ecdfplot(x, 
+            bins = m, 
+            title = "Función de distrib. con StatsPlots", 
+            xlabel = "x", 
+            ylabel = "Frec. relativa acum.", 
+            legend = false,
+            color = :gray)
+
+#=
+1.1(d) Repetir (b) y (c) para el cuadrado de los números aleatorios
+
+Hacemos estas gráficas solo usando StatsPlots
+=#
+
+x2 = x.^2
+
+histogram(x2, 
+        normalize = :probability,
+        bins = m, 
+        title = "Histograma de x^2", 
+        xlabel = "x", 
+        ylabel = "Frecuencia relativa", 
+        legend = false,
+        color = :lightgray)
+
+ecdfplot(x2, 
+        bins = m, 
+        title = "Función de distrib. de x^2", 
+        xlabel = "x", 
+        ylabel = "Frec. relativa acum.", 
+        legend = false,
+        color = :gray)
 
