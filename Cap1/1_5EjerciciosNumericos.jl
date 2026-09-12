@@ -207,3 +207,77 @@ Se nota que al incrementar la muestra de $N = 100$ a $N = 10_000$, la varianza d
 * En las distribuciones acumuladas (CDF): La curva para $N = 100$ exhibe un crecimiento gradual (forma sigmoide), lo que indica que la probabilidad se acumula a lo largo de un intervalo ancho de valores. Para $N = 10_000$, la curva se transforma en una función escalón que salta verticalmente de $0$ a $1$ en la coordenada $x = 1$.
 
 =#
+
+#=
+1.3. El teorema del límite central. La aproximación (1.5) de la esperanza en términos de la media empírica no es exacta para $N$ finito. El error está controlado por el teorema del límite central. Para una muestra $X_1, \dots, X_N$ de la variable aleatoria $X$ con media $\mathbf{E}[X]$ y varianza $\sigma^2$, este teorema establece que la suma $S_N = X_1 + \dots + X_N$ se comporta como
+
+$$S_N \approx N\mathbf{E}[X] + \sigma\sqrt{N}Z,$$
+
+donde $Z$ es una variable aleatoria gaussiana estándar. Más precisamente, esto significa que
+
+(1.13) $$\lim_{N \to \infty} \frac{S_N - N\mathbf{E}[X]}{\sigma\sqrt{N}} = Z.$$
+
+El límite debe entenderse aquí como convergencia en distribución. En términos prácticos, esto significa que el histograma de la variable aleatoria
+
+$$\frac{S_N - N\mathbf{E}[X]}{\sigma\sqrt{N}}$$
+
+debería parecerse al de una variable gaussiana estándar cuando $N$ es grande. Verificaremos esto numéricamente.
+
+(a) Sea $S_N = X_1 + \dots + X_N$, donde las $X_i$ son variables aleatorias con distribución exponencial de parámetro 1. Defina una función en Julia que retorne, para un $N$ dado, el valor
+
+$$Y_N = \frac{S_N - N\mathbf{E}[X]}{\sigma\sqrt{N}}.$$
+
+(b) Grafique los histogramas (PDF) de una muestra de tamaño 10_000 de $Y_N$ para $N = 100$. ¿Qué observa?
+
+(c) Compare lo anterior con el histograma de una muestra de tamaño 10_000 de puntos generados utilizando la distribución gaussiana estándar.
+
+Solución
+
+1.3(a)
+=#
+
+λ = 1
+
+X = Exponential(1/λ)
+
+function yn_exp(n::Int64)
+    μ = mean(X)
+    σ = std(X)
+    yn = (sum(rand(X, n))-n*μ)/(σ*sqrt(n))
+
+    return yn
+end
+
+# 1.3(b)
+
+muestras_yn_100 = [yn_exp(100) for _ in 1:10_000]
+muestra_z = randn(10_000)
+
+x_min = minimum(vcat(muestras_yn_100, muestra_z))
+x_max = maximum(vcat(muestras_yn_100, muestra_z))
+
+h1 = histogram(muestras_yn_100,
+          normalize = :pdf,
+          xlims = [x_min, x_max],
+          title = "Histograma. 10_000 medias de tamaño 100 c/u", 
+          xlabel = "x", 
+          ylabel = "Densidad", 
+          legend = false,
+          color = :lightgray,
+          linecolor = :transparent)
+plot!(h1, Normal(0, 1), linewidth=2, color=:black)
+
+h2 = histogram(muestra_z,
+          normalize = :pdf,
+          xlims = [x_min, x_max],
+          title = "Histograma. 10_000 valores de Z N(0, 1)", 
+          xlabel = "x", 
+          ylabel = "Densidad", 
+          legend = false,
+          color = :lightpink,
+          linecolor = :transparent)
+plot!(h2, Normal(0, 1), linewidth=2, color=:black)
+
+plot(h1, h2, layout = (2,1), size = (900, 800))
+
+# Exhiben el mismo comportamiento.
